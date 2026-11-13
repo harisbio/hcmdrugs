@@ -99,12 +99,10 @@ export default function About() {
     if (location.state?.scrollTo) setTimeout(() => document.getElementById(location.state.scrollTo)?.scrollIntoView({ block: 'start' }), 50);
   }, [location.state]);
 
-  const citeVersion = `HCMdrugs database, version ${version}. ${window.location.origin}${window.location.pathname}#/?v=${version} (accessed ${new Date().toISOString().slice(0, 10)}).`;
 
   return (
     <div className="wrap">
       <header className="doc-head">
-        <span className="kicker">Methods &amp; citation · dataset v{version}</span>
         <h1>Methods, data model and citation</h1>
         <p className="dek">How the database is organized, what each field means, how versions are managed, and how to cite HCMdrugs.</p>
       </header>
@@ -207,10 +205,6 @@ export default function About() {
             </div>
             <h3>BibTeX</h3>
             <div className="code"><pre>{BIBTEX}</pre><CopyButton text={BIBTEX} label="Copy" /></div>
-            <h3>Dataset version</h3>
-            <p>State the version you used as well. For the version you are viewing (v{version}):</p>
-            <div className="ref-block" style={{ fontFamily: 'var(--mono)', fontSize: '0.82rem' }}>{citeVersion}</div>
-            <div className="actions"><CopyButton text={citeVersion} label="Copy" /></div>
           </section>
 
           <section id="versions">

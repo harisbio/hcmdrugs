@@ -171,8 +171,7 @@ export default function Explorer() {
   return (
     <div className="wrap">
       <header className="doc-head" style={{ paddingBottom: 18 }}>
-        <span className="kicker">Explorer · dataset v{version}</span>
-        <h1>Workbench</h1>
+        <h1>Explorer</h1>
         <p className="dek">Filter by facet or query any field. Select a row to preview it; press Enter or double-click to open the full monograph. Tick rows to compare up to {MAX_COMPARE} drugs side by side.</p>
       </header>
 

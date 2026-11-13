@@ -54,7 +54,6 @@ export default function Compare() {
   return (
     <div className="wrap">
       <header className="doc-head">
-        <span className="kicker">Compare · dataset v{version}</span>
         <h1>Side-by-side comparison</h1>
         <p className="dek">
           Compare up to {MAX_COMPARE} drugs field by field. Rows where the drugs differ are highlighted.

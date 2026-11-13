@@ -50,7 +50,6 @@ export default function DrugPage() {
     return (
       <div className="wrap">
         <header className="doc-head">
-          <span className="kicker">Monograph · {drugId}</span>
           <h1>{drugId} is not in version {version}</h1>
           <p className="dek">This record does not exist in the dataset version you are viewing.</p>
           <div className="actions" style={{ marginTop: 18 }}>
@@ -80,7 +79,6 @@ export default function DrugPage() {
       </nav>
 
       <header className="mono-head">
-        <span className="kicker">Monograph · {drug.drugId} · dataset v{version}</span>
         <h1>{drug.name}</h1>
         <p className="classline">{drug.drugClass}</p>
         <div className="row" style={{ marginTop: 12 }}>

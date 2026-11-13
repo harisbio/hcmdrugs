@@ -71,9 +71,7 @@ export default function Overview() {
       {/* ── Title block ── */}
       <section className="title-block">
         <div>
-          <span className="kicker">Reference database · dataset v{version} · {isLatest ? 'latest' : 'archived'}</span>
           <h1>A curated, versioned database of drugs for <em>hypertrophic cardiomyopathy</em>.</h1>
-          <p className="authors">Muhammad Haris, Shahroz Rahman, Muhammad Tahir ul Qamar, Farrukh Azeem</p>
           <div className="abstract">
             <span className="kicker">Abstract</span>
             <p>
@@ -177,7 +175,6 @@ export default function Overview() {
               </div>
             ))}
           </div>
-          <p className="caption"><b>Figure 1.</b> HCMdrugs v{version}. Number = drug ID; dot = FDA status; edge colour = class.</p>
         </div>
       </section>
 
