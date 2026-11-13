@@ -10,10 +10,10 @@ authors:
   - family-names: "Azeem"
     given-names: "Farrukh"
 title: "HCMdrugs Database"
-version: 1.0.0
+version: 1.1.0
 doi: "10.1142/S2737416525500954"
-date-released: 2026-01-01
-url: "https://github.com/your-username/hcmdrugs"
+date-released: 2026-11-13
+url: "https://github.com/harisbio/HCMdrugs"
 preferred-citation:
   type: article
   authors:

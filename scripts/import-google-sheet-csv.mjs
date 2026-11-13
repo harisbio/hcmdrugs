@@ -1,13 +1,12 @@
 import fs from "node:fs";
-import path from "node:path";
 import https from "node:https";
-import { fileURLToPath } from "node:url";
+import { csvPath, positionalArgs, targetVersion } from "./lib/versions.mjs";
 
-const scriptDir = path.dirname(fileURLToPath(import.meta.url));
-const projectRoot = path.resolve(scriptDir, "..");
-const outCsvPath = path.resolve(projectRoot, "data/drugs.csv");
+// Saves a published Google Sheet CSV as data/v<version>/drugs.csv
+// (latest version by default, or `--version X.Y.Z`).
+const outCsvPath = csvPath(targetVersion());
 
-const url = process.argv[2];
+const url = positionalArgs()[0];
 if (!url) {
   console.error("Usage: node scripts/import-google-sheet-csv.mjs <published-csv-url>");
   process.exit(1);

@@ -1,17 +1,19 @@
 {
   "name": "hcmdrugs-static",
-  "version": "1.0.0",
-  "description": "Static rebuild of HCMdrugs database",
+  "version": "1.1.0",
+  "description": "HCMdrugs: a curated, versioned database of drugs for hypertrophic cardiomyopathy",
   "license": "MIT",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "extract:sql": "node scripts/extract-drugs-from-sql.mjs",
+    "extract:sql": "node scripts/extract-drugs-from-sql.mjs && node scripts/clean-drugs.mjs --version 1.0.0",
     "export:csv": "node scripts/drugs-json-to-csv.mjs",
-    "import:csv": "node scripts/drugs-csv-to-json.mjs",
-    "import:sheet": "node scripts/import-google-sheet-csv.mjs"
+    "import:csv": "node scripts/drugs-csv-to-json.mjs && node scripts/clean-drugs.mjs",
+    "import:sheet": "node scripts/import-google-sheet-csv.mjs",
+    "clean:data": "node scripts/clean-drugs.mjs",
+    "new-version": "node scripts/new-version.mjs"
   },
   "dependencies": {
     "lucide-react": "^1.16.0",

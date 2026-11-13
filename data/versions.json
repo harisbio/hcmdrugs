@@ -1,0 +1,44 @@
+{
+  "latest": "1.1.0",
+  "versions": [
+    {
+      "version": "1.1.0",
+      "released": "2026-11-13",
+      "title": "Cardiac myosin inhibitors and 3 more drugs",
+      "summary": "Adds 5 drugs: the HCM-specific cardiac myosin inhibitors mavacamten and aficamten, plus dofetilide, cibenzoline and ranolazine. All references verified against PubMed.",
+      "drugCount": 77,
+      "added": [
+        {
+          "drugId": "HCM0073",
+          "name": "MAVACAMTEN"
+        },
+        {
+          "drugId": "HCM0074",
+          "name": "AFICAMTEN"
+        },
+        {
+          "drugId": "HCM0075",
+          "name": "DOFETILIDE"
+        },
+        {
+          "drugId": "HCM0076",
+          "name": "CIBENZOLINE"
+        },
+        {
+          "drugId": "HCM0077",
+          "name": "RANOLAZINE"
+        }
+      ],
+      "removed": []
+    },
+    {
+      "version": "1.0.0",
+      "released": "2024-07-10",
+      "title": "Initial release",
+      "summary": "The original 73 drugs described in Haris et al. (2026), J. Comput. Biophys. Chem. 25(09), 1341-1350. Text encoding, drug-class names and reference formatting were standardized in Nov 2026 without changing the scientific content.",
+      "drugCount": 72,
+      "added": [],
+      "removed": []
+    }
+  ]
+}

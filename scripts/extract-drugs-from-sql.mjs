@@ -5,8 +5,15 @@ import { fileURLToPath } from "node:url";
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(scriptDir, "..");
 const workspaceRoot = path.resolve(projectRoot, "..");
-const sqlPath = path.resolve(workspaceRoot, "hcmpvdms_harisproject.sql");
-const outPath = path.resolve(projectRoot, "data/drugs.json");
+const sqlCandidates = [
+  process.argv[2],
+  path.resolve(workspaceRoot, "hcmpvdms_harisproject.sql"),
+  path.resolve(workspaceRoot, "..", "hcmpvdms_harisproject.sql"),
+].filter(Boolean);
+const sqlPath = sqlCandidates.find((p) => fs.existsSync(p));
+if (!sqlPath) throw new Error(`SQL dump not found; pass its path. Looked in: ${sqlCandidates.join(", ")}`);
+// The SQL dump is the legacy (Laravel) database, i.e. the source of v1.0.0.
+const outPath = path.resolve(projectRoot, "data/v1.0.0/drugs.json");
 
 const sql = fs.readFileSync(sqlPath, "utf8");
 

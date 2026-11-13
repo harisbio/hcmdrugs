@@ -1,10 +1,16 @@
 # HCMdrugs Database
 
-Welcome to the HCMdrugs Database repository. This project provides a structured and accessible collection of drug data, designed to be easily searchable and maintainable for researchers, developers, and professionals.
+HCMdrugs is a curated, versioned database of drugs used or studied in the treatment of hypertrophic cardiomyopathy (HCM). Each record describes a drug's effects in HCM, its molecular targets, pharmacological class, FDA status, origin and brand names, with references to the published literature.
 
 ## Overview
 
-The HCMdrugs database offers a web-based interface to interact with the underlying drug data. It is built to be fast, responsive, and easy to deploy.
+The database is a static web application (React + Vite) that runs entirely in the browser and is deployed to GitHub Pages. It has five sections:
+
+- **Overview**: dataset summary, a query bar, the therapeutic landscape (every drug grouped by class), a class × status composition table, and the changes in the selected version.
+- **Explorer**: a workbench with faceted filters, a field-qualified query language (e.g. `class:myosin`, `target:"potassium channel"`, `-status:approved`), a sortable table or card view with selectable columns, a preview pane and keyboard navigation.
+- **Drug monographs**: one page per drug with effects, molecular targets, regulatory status and source, nomenclature and numbered references.
+- **Compare**: up to four drugs side by side, with differing fields highlighted.
+- **Methods & citation**: scope, data model, classification, versioning policy, citation formats and version history.
 
 ## Citation
 
@@ -19,18 +25,18 @@ If you use this database in your research, please cite our published manuscript:
 ### Prerequisites
 
 To run this project locally, ensure you have the following installed:
-- [Node.js](https://nodejs.org/) (version 18 or higher recommended)
-- npm or yarn
+- [Node.js](https://nodejs.org/) 20.19 or later (or 22.12 or later)
+- npm
 
 ### Installation
 
 1. Clone the repository to your local machine:
    ```bash
-   git clone https://github.com/your-username/hcmdrugs.git
+   git clone https://github.com/harisbio/HCMdrugs.git
    ```
 2. Navigate into the project directory:
    ```bash
-   cd hcmdrugs
+   cd HCMdrugs
    ```
 3. Install the required dependencies:
    ```bash
@@ -67,15 +73,69 @@ To enable this:
 3. Under **Build and deployment**, set the **Source** to **GitHub Actions**.
 4. The `.github/workflows/deploy.yml` workflow will automatically run and publish your site!
 
-*Note: In `vite.config.js`, the `base` is set to `'/hcmdrugs/'`. If your GitHub repository has a different name, make sure to update that base path to match.*
+*Note: `vite.config.js` uses a relative `base` (`'./'`) and the site uses hash-based routes, so it works under any repository name without changes.*
+
+## Database Versions
+
+Every release of the database is kept, so work that cites a specific version stays reproducible.
+The site opens on the latest version; the dataset selector in the header (and the **Version history**
+section of the Methods & citation page) lets visitors browse any earlier version. A version can be
+linked directly with `?v=`, e.g. `https://<site>/#/explorer?v=1.0.0`.
+
+```
+data/
+  versions.json        manifest: latest version + changelog (title, summary, added/removed drugs)
+  v1.0.0/drugs.json    the original release (shown as 73 drugs, as published in Haris et al. 2026)
+  v1.0.0/drugs.csv
+  v1.1.0/drugs.json    adds mavacamten, aficamten, dofetilide, cibenzoline, ranolazine (shown as 78 drugs)
+  v1.1.0/drugs.csv
+```
+
+Versions follow semantic versioning: adding or removing drugs bumps the minor number (1.1.0 → 1.2.0);
+corrections to existing entries bump the patch number (1.1.0 → 1.1.1).
+
+### Releasing a new version
+
+1. `npm run new-version -- 1.2.0 "Short title" "One-sentence summary"` copies the latest version into
+   `data/v1.2.0/` and makes it the latest.
+2. Edit `data/v1.2.0/drugs.csv` (or the Google Sheet), then run `npm run import:csv`.
+   New drugs get the next `HCMxxxx` ID; existing drugs keep their IDs.
+3. `npm run clean:data` runs as part of the import. It standardizes the data and records which drugs
+   were added or removed in `data/versions.json`, which the site shows as "New in v1.2.0" badges and in
+   the version history.
+4. Run `npm run export:csv` if you edited the JSON directly, then commit.
+
+Never edit an older version's folder after it is released.
+
+The drug totals shown on the site are hardcoded per version in `TOTAL_DRUGS` (`src/versions.jsx`); add a line there for each new version.
 
 ## Data Scripts
 
-The project includes several built-in scripts to help manage the database data:
-- `npm run extract:sql`: Extracts drug data from SQL.
-- `npm run export:csv`: Exports the drug JSON data to a CSV format.
-- `npm run import:csv`: Imports drug data from a CSV file into JSON.
-- `npm run import:sheet`: Imports data from a Google Sheet CSV.
+All scripts act on the **latest** version unless you add `--version X.Y.Z`
+(e.g. `npm run export:csv -- --version 1.0.0`).
+
+- `npm run new-version -- X.Y.Z "Title" "Summary"`: Starts a new version from the latest one.
+- `npm run import:csv`: Imports `data/v<version>/drugs.csv` into JSON, then cleans it.
+- `npm run export:csv`: Writes `data/v<version>/drugs.csv` from the JSON.
+- `npm run import:sheet -- <published-csv-url>`: Downloads a Google Sheet CSV into the latest version's folder (then run `npm run import:csv`).
+- `npm run clean:data`: Cleans and standardizes the version's JSON in place and updates its changelog entry (safe to re-run).
+- `npm run extract:sql`: Rebuilds v1.0.0 from the legacy Laravel SQL dump.
+
+### Data conventions
+
+`scripts/clean-drugs.mjs` enforces these rules:
+
+| Field | Format |
+|---|---|
+| `name` | Upper case, e.g. `NADOLOL` |
+| `nature` | `Synthetic` or `Natural` |
+| `status` | `FDA approved` or `Not FDA approved` |
+| `drugClass` | A fixed vocabulary, e.g. `Beta Blocker`, `Calcium Channel Blocker`, `Cardiac Myosin Inhibitor`, `Class III Antiarrhythmic`, `Angiotensin II Receptor Blocker (ARB)`. New classes must be added to `CLASS_MAP` in `scripts/clean-drugs.mjs` |
+| `brandNames` | Comma-separated, no duplicates |
+| `references` | Separated by ` \| ` (space, pipe, space); bare DOIs written as `https://doi.org/...` |
+| Missing values | Empty string (not `N/A` or `NULL`) |
+
+When editing data in the CSV or Google Sheet, separate references with ` | `, not `;`, because many citations contain semicolons themselves.
 
 ## License
 

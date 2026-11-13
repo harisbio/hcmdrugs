@@ -1,16 +1,14 @@
+// Writes data/v<version>/drugs.csv from that version's drugs.json
+// (latest version by default, or `--version X.Y.Z`).
+
 import fs from "node:fs";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { csvPath, readRecords, targetVersion } from "./lib/versions.mjs";
 
-const scriptDir = path.dirname(fileURLToPath(import.meta.url));
-const projectRoot = path.resolve(scriptDir, "..");
-const inPath = path.resolve(projectRoot, "data/drugs.json");
-const outPath = path.resolve(projectRoot, "data/drugs.csv");
+const version = targetVersion();
+const records = readRecords(version);
+const outPath = csvPath(version);
 
-const data = JSON.parse(fs.readFileSync(inPath, "utf8"));
-const records = data.records || [];
-
-const headers = [
+export const CSV_HEADERS = [
   "drugId",
   "name",
   "effects",
@@ -28,10 +26,10 @@ function csvEscape(value) {
   return `"${text.replace(/"/g, '""')}"`;
 }
 
-const lines = [headers.join(",")];
+const lines = [CSV_HEADERS.join(",")];
 for (const row of records) {
-  lines.push(headers.map((h) => csvEscape(row[h])).join(","));
+  lines.push(CSV_HEADERS.map((h) => csvEscape(row[h])).join(","));
 }
 
-fs.writeFileSync(outPath, lines.join("\n"));
+fs.writeFileSync(outPath, lines.join("\n") + "\n");
 console.log(`Wrote ${records.length} rows to ${outPath}`);

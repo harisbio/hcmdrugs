@@ -1,66 +1,86 @@
-import React, { useEffect, useState } from 'react';
-import { HashRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
-import { Database as DbIcon, Info, Heart } from 'lucide-react';
-import Database from './pages/Database';
-import About from './pages/About';
+import React, { useEffect } from 'react';
+import { HashRouter as Router, Routes, Route, NavLink, Link, useLocation } from 'react-router-dom';
 import logo from './assets/HCMdrugs_logo.png';
+import { VersionProvider, useVersion, totalDrugs } from './versions';
+import { VersionSelect, VersionBanner, useVersionLink, CompareProvider, useCompare } from './components';
+import Overview from './pages/Overview';
+import Explorer from './pages/Explorer';
+import DrugPage from './pages/DrugPage';
+import Compare from './pages/Compare';
+import About from './pages/About';
 
-const totalDrugs = 73;
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
+  return null;
+}
 
-function Navigation() {
-  const location = useLocation();
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 10);
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
+function Masthead() {
+  const { version } = useVersion();
+  const compare = useCompare();
+  const to = useVersionLink();
+  const navClass = ({ isActive }) => (isActive ? 'active' : '');
   return (
-    <header
-      className="nav-header"
-      style={{ boxShadow: scrolled ? '0 8px 32px rgba(0,0,0,0.4)' : 'none', transition: 'box-shadow 0.3s' }}
-    >
-      <Link to="/" className="nav-logo" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
-        <img src={logo} alt="HCMdrugs" />
-      </Link>
+    <>
+      <header className="masthead">
+        <div className="wrap">
+          <Link to={to('/')} className="brand" aria-label="HCMdrugs overview">
+            <span className="brand-logo" style={{ '--logo': `url(${logo})` }} />
+          </Link>
+          <nav className="nav" aria-label="Main">
+            <NavLink to={to('/')} end className={navClass}>Overview</NavLink>
+            <NavLink to={to('/explorer')} className={navClass}>Explorer <span className="count">{totalDrugs(version)}</span></NavLink>
+            <NavLink to={to('/compare')} className={navClass}>Compare {compare.ids.length > 0 && <span className="count">{compare.ids.length}</span>}</NavLink>
+            <NavLink to={to('/about')} className={navClass}>Methods &amp; citation</NavLink>
+          </nav>
+          <VersionSelect />
+        </div>
+      </header>
+    </>
+  );
+}
 
-      <nav className="nav-links">
-        <Link to="/" className={`nav-link${location.pathname === '/' ? ' active' : ''}`}>
-          <DbIcon size={15} />
-          Database
-          <span className="nav-badge">{totalDrugs}</span>
-        </Link>
-        <Link to="/about" className={`nav-link${location.pathname === '/about' ? ' active' : ''}`}>
-          <Info size={15} />
-          About &amp; Publication
-        </Link>
-      </nav>
-    </header>
+function Footer() {
+  const to = useVersionLink();
+  return (
+    <footer className="footer">
+      <div className="wrap">
+        <p className="cite">
+          Haris M, Rahman S, Qamar MTu, Azeem F. HCMdrugs: a web-based database cataloging the drugs available for the
+          treatment of hypertrophic cardiomyopathy. <i>J Comput Biophys Chem.</i> 2026;25(09):1341–1350.
+        </p>
+        <nav aria-label="Footer">
+          <Link to={to('/')}>Overview</Link>
+          <Link to={to('/explorer')}>Explorer</Link>
+          <Link to={to('/compare')}>Compare</Link>
+          <Link to={to('/about')}>Methods &amp; citation</Link>
+        </nav>
+      </div>
+    </footer>
   );
 }
 
 export default function App() {
   return (
     <Router>
-      <div className="bg-ambient" />
-      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', position: 'relative', zIndex: 1 }}>
-        <Navigation />
-
-        <Routes>
-          <Route path="/" element={<Database />} />
-          <Route path="/about" element={<About />} />
-        </Routes>
-
-        <footer className="site-footer">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <Heart size={13} fill="currentColor" style={{ color: 'var(--accent)' }} />
-            <span>HCMdrugs &mdash; An Open-Access Pharmacological Database</span>
-          </div>
-          <span>&copy; {new Date().getFullYear()} HCMdrugs. All rights reserved.</span>
-        </footer>
-      </div>
+      <VersionProvider>
+        <CompareProvider>
+          <ScrollToTop />
+          <Masthead />
+          <VersionBanner />
+          <main>
+            <Routes>
+              <Route path="/" element={<Overview />} />
+              <Route path="/explorer" element={<Explorer />} />
+              <Route path="/drug/:drugId" element={<DrugPage />} />
+              <Route path="/compare" element={<Compare />} />
+              <Route path="/about" element={<About />} />
+              <Route path="*" element={<Overview />} />
+            </Routes>
+          </main>
+          <Footer />
+        </CompareProvider>
+      </VersionProvider>
     </Router>
   );
 }
